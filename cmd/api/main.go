@@ -53,17 +53,12 @@ func main() {
 		logger: logger,
 	}
 
-	// Объявляем новый мультиплексор и добавляем маршрут `/v1/healthcheck`,
-	// который будет перенаправлять запросы в метод `healhcheckHandler`
-	// (мы создадим его чуть позже).
-	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/healthCheck", app.healhcheckHandler)
-
 	// Объявляем HTTP-сервер с настройками тайм-аута, который прослушивает порт,
-	// указанный в структуре конфигурации, и использует созданный выше мультиплексор.
+	// указанный в структуре конфигурации, и использует экземпляр `chi.Mux`,
+	// который возвращает метод app.routes().
 	srv := &http.Server{
 		Addr: 				fmt.Sprintf(":%d", cfg.port),
-		Handler: 			mux,
+		Handler: 			app.routes(),
 		IdleTimeout: 	time.Minute,
 		ReadTimeout: 	10 * time.Second,
 		WriteTimeout: 30 * time.Second,
